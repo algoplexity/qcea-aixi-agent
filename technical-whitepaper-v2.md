@@ -84,3 +84,36 @@ This approach aims to solve the **"Intelligent Amnesia"** problem identified in 
 *   **Horizon 2 (This Project)** gives us the automated sprinkler system.
 
 By linking **Algorithmic Diagnosis** (State) to **Strategic Action** (Policy), we are building the first **QCEA-Compliant Agent**: a system that survives not by predicting the future, but by adapting its internal structure faster than the environment can erode its coherence.
+
+---
+
+### **Addendum to Project Aletheia: The Variance Decoupling Hypothesis**
+
+**1. The Observation (From Demo)**
+Standard probabilistic models (like NGBoost or Gaussian Heads on Transformers) couple the prediction of the Mean ($\mu$) and the Variance ($\sigma$) to the **same historical window**.
+*   They learn $\mu$ from *historical price*.
+*   They learn $\sigma$ from *historical residuals* (past errors).
+
+**2. The Fallacy**
+In a Regime Shift (Class 2 Trend $\to$ Class 4 Chaos), **historical residuals are a lagging indicator**.
+*   At $t=0$ of the crash, history says "errors are low."
+*   The model predicts $\sigma \approx 0$.
+*   The reality is $\sigma \to \infty$.
+*   **Result:** Log-Likelihood $\to -\infty$ (Bankruptcy).
+
+**3. The Revised Operational Mandate**
+We must **decouple** the prediction of Price and Risk.
+*   **Pathway A (The Parrot):** Predicts $\mu$ (Location) using standard autoregressive features (Momentum, Mean Reversion).
+*   **Pathway B (The Physicist):** Predicts $\sigma$ (Scale) using **Algorithmic Complexity** (Permutation Entropy, Compression Rate).
+
+**4. The Engineering Rule (The "Variance Gate")**
+We formally define the Variance Gate function $G(x)$:
+$$ \sigma_{final} = \max(\sigma_{stat}, \quad \alpha \cdot \text{Complexity}(X_t)) $$
+Where:
+*   $\sigma_{stat}$ is the variance predicted by NGBoost/Model.
+*   $\text{Complexity}(X_t)$ is the output of the AIT Physicist (0 to 1).
+*   $\alpha$ is the "Panic Coefficient" (determined by the QCEA Thermodynamic Budget).
+
+---
+
+
