@@ -116,4 +116,73 @@ Where:
 
 ---
 
+We need to make **three specific tactical updates** to our hypothesis.
 
+While the *Strategic* hypothesis (QCEA-T + UAI) remains solid, the *Operational* capabilities of the Falcon platform (specifically the **Data Stream** format and the **Mixture Density** capability) allow us to be much more aggressive than we initially planned.
+
+Here is the **Updated Technical Hypothesis (v1.1)** based on the platform reconnaissance.
+
+---
+
+### **1. The "Flock Entropy" Update (Spatial vs. Temporal)**
+
+**Original Hypothesis:** We compute the Permutation Entropy of the price history (Time Domain) to detect regime shifts.
+**New Reality:** We have access to multiple `falcon_locations` simultaneously.
+**The Update:** We must compute **Cross-Sectional (Spatial) Entropy**.
+
+*   **The Logic:** In a **Class 2 (Trend)** regime, the Falcons (features) should be coherent (clumped together). In a **Class 60 (Chaos)** regime, the Falcons will disperse.
+*   **The Tactic:** We will calculate the **Dispersion Index** of the Falcon Flock at every tick.
+    *   *Hypothesis:* Spatial Dispersion (Falcons disagreeing) is a **Leading Indicator** of Temporal Volatility (Dove crashing).
+    *   *Equation:* $E_{spatial} = \text{StdDev}(\text{Falcon}_1, \text{Falcon}_2, ... \text{Falcon}_n)$
+    *   *Action:* If $E_{spatial}$ spikes, widen the Dove prediction $\sigma$ immediately, even if the Dove hasn't moved yet.
+
+### **2. The "Soliton Bifurcation" Update (Mixture Models)**
+
+**Original Hypothesis:** Use a single Gaussian and widen the variance ($\sigma$) when complexity rises.
+**New Reality:** The platform accepts a **Weighted Mixture** of distributions (`{"weights": [...], "components": [...]}`).
+**The Update:** We will model **Class 4 (Solitons)** explicitly as **Bimodal Distributions**.
+
+*   **The Logic:** A "Soliton" (Rule 54) often represents a bifurcation—the market might crash OR rocket up, but it won't stay still. A wide Gaussian assigns probability to the middle (staying still), which is wrong.
+*   **The Tactic:** When the AIT Physicist detects "Complexity Saturation" (Rule 54):
+    *   Do *not* just output one fat Gaussian $\mathcal{N}(0, 10)$.
+    *   Output **Two Narrow Gaussians**: $\mathcal{N}(-5, 1)$ and $\mathcal{N}(+5, 1)$.
+    *   *Hypothesis:* This captures the physics of a "Phase Transition" (symmetry breaking) better than a simple variance increase, yielding higher Log-Likelihood scores by placing mass exactly where the Solitons might land.
+
+### **3. The "Computational Budget" Update (Distillation)**
+
+**Original Hypothesis:** Run the "AIT Physicist" (Transformer) on the input stream.
+**New Reality:** The `tick()` loop is synchronous. A 50ms latency limit makes running a heavy Transformer risky.
+**The Update:** We will use **Heuristic Distillation**.
+
+*   **The Logic:** We cannot afford deep learning inference on every tick.
+*   **The Tactic:**
+    *   **Offline (Research):** Train the Transformer to classify regimes (Soliton vs. Chaos).
+    *   **Online (Falcon):** Use lightweight proxies that correlate with the Transformer's output.
+        *   *Proxy 1:* Permutation Entropy (Temporal Complexity).
+        *   *Proxy 2:* Flock Dispersion (Spatial Consistency).
+        *   *Proxy 3:* The "Wingspan" metadata provided by the platform (likely a pre-computed volatility signal).
+
+---
+
+### **Revised Whitepaper Addendum: The "Aletheia" Protocol**
+
+**Goal:** Catch the Dove by predicting the *State of the Generator*, not the *Location of the Particle*.
+
+**Architecture:**
+1.  **Input:** Stream of Falcon Locations ($F_t$).
+2.  **The Sensory Organ (Lite):**
+    *   Compute $H_{temporal}$ (Permutation Entropy of mean path).
+    *   Compute $H_{spatial}$ (Standard Deviation of flock).
+    *   *State Vector:* $S_t = [H_{temporal}, H_{spatial}, \Delta H]$.
+3.  **The Logic Gate (QCEA):**
+    *   **State: Coherent ($H \approx 0$):**
+        *   *Topology:* Rule 170 (Trend).
+        *   *Output:* Single Narrow Gaussian (Confidence).
+    *   **State: Saturation ($H \uparrow$ rapid):**
+        *   *Topology:* Rule 54 (Soliton/Bifurcation).
+        *   *Output:* **Bimodal Mixture** (Bet on volatility/breakout).
+    *   **State: Decoherence ($H \approx 1$):**
+        *   *Topology:* Rule 60 (Chaos).
+        *   *Output:* Single Wide Gaussian (Survival/Max Entropy).
+
+---
