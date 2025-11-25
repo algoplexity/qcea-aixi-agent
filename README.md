@@ -4,6 +4,11 @@ This document integrates the **Physics of Horizon 1**, the **Agency of Horizon 2
 
 ---
 
+Official repository for Horizon 2 of the Algoplexity Research Program. This project implements the QCEA-Falcon Hypothesis, a hybrid control architecture that synthesizes Universal Artificial Intelligence (AIXI) and Quantum-Complex-Entropic-Adaptive (QCEA) theory.
+By utilizing an AIT-based "Solomonoff Sensor" to detect topological regime shifts (Soliton Saturation vs. Entropic Shattering), the agent solves the "Control Problem" in non-stationary financial environments. Validated via the CrunchDAO Falcon competition.
+
+---
+
 # The UAI-QCEA-Falcon Hypothesis
 **"Survival via Topological Recognition"**
 
