@@ -59,7 +59,7 @@ We expect to defeat the Falcon Leaderboard not by being more accurate on average
 **In summary:** We are not building a bot that predicts *prices*. We are building a bot that predicts **the failure of prediction itself**.
 
 ---
-
+```text
 qcea-aixi-agent/
 │
 ├── README.md              # The Grand Unified Hypothesis & Project Roadmap
@@ -89,3 +89,17 @@ qcea-aixi-agent/
 └── artifacts/             # Outputs
     ├── logs/              # Log-likelihood scores
     └── figures/           # Generated plots for the paper
+```
+
+---
+## Empirical Validation: Catching the Golden Dove
+
+**Figure 1** below demonstrates the QCEA-Falcon Agent's performance during a "Soliton Saturation" event (Endogenous Collapse).
+
+![Horizon 2 Proof: Soliton Capture](artifacts/figures/figure1_horizon2_proof_soliton_capture.png)
+
+### Forensic Analysis of the "Ghost in the Machine"
+1.  **The Signal (Middle Panel, Green Line):** At **Tick 1800**, the AIT Sensor detects a collapse in Algorithmic Complexity ($K \approx 0.23$), piercing the Soliton Threshold (Red Dashed Line). The market structure becomes hyper-ordered ("Cognitive Collapse").
+2.  **The Intervention (Bottom Panel, Red Line):** The Agent's Control Law triggers immediately, inflating the Uncertainty Envelope ($\sigma$) by **400%**. Note that the Pilot (NGBoost/Blue Line) remains flat, unaware of the hidden risk.
+3.  **The Survival (Top Panel, Black Line):** When the price crashes at **Tick 2100**, the QCEA Agent has already priced in the tail risk, capturing the move within its bands, whereas standard statistical models would suffer catastrophic likelihood failure.
+---
