@@ -1,6 +1,7 @@
 """
 QCEA-AIXI AGENT SUBMISSION
 Horizon 2: The Reflective Physicist
+Horizon 2 QCEA-AIXI Agent (Ensemble Gate + Prime 9 Sensor)
 """
 import pandas as pd
 import numpy as np
