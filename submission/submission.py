@@ -90,21 +90,19 @@ class QCEAAgent(TrackerBase):
 
     def predict(self):
         """
-        The Policy Step.
-        Maps Physics (Entropy) -> Strategy (Sigma).
+        The Policy Step (Calibrated for Survival).
         """
         # Warmup / Fallback
         if len(self.history) < self.window + 10: 
             return self._default_pred()
             
-        # --- PHASE 1: SENSING (The Physicist) ---
+        # --- PHASE 1: SENSING ---
         try:
-            # Second-Order MILS Encoding (Velocity)
-            # We use Velocity for CrunchDAO as established in Notebook 2
             recent = pd.Series(self.history[-(self.window + 10):])
             vel = recent.diff()
             acc = vel.diff().dropna()
             
+            # MILS Quantile Binning
             bins = pd.qcut(acc.values, 4, labels=False, duplicates='drop')
             grid = np.eye(4)[bins.astype(int)][-self.window:]
             
@@ -116,52 +114,51 @@ class QCEAAgent(TrackerBase):
                 logits = self.physicist(t_grid)
                 probs = torch.softmax(logits, dim=1)
                 
-            # METRIC: Shannon Entropy (Confusion)
+            # Metric: Entropy
             p_np = probs.numpy()[0]
             entropy = -np.sum(p_np * np.log(p_np + 1e-9))
                 
         except: return self._default_pred()
             
-        # --- PHASE 2: INFERENCE (The Reflex) ---
-        # QCEA Law 9: Adaptive Need.
-        # If Entropy is High, we distrust Trend (Newton).
-        # If Entropy is Low, we trust Trend.
-        
+        # --- PHASE 2: INFERENCE (The Hard-Wired Reflex) ---
         if self.model_loaded:
-            # Sigmoid Transfer Function
-            # Threshold = 0.8 bits (Derived from Notebook 5)
+            # Low Entropy -> Trust Trend (w=1)
+            # High Entropy -> Trust Chaos (w=0)
             k = 5.0
             threshold = 0.8
             w = 1.0 - (1.0 / (1.0 + np.exp(-k * (entropy - threshold))))
         else:
-            w = 0.5 # Fallback
+            w = 0.5 
             
-        # --- PHASE 3: ACT (Ensemble Synthesis) ---
+        # --- PHASE 3: ACT (The Iron Dome) ---
         v_curr = vel.iloc[-1]
         
-        # Expert A: Newtonian (Inertia/Trend)
-        # Rule 170 Logic: Project current velocity forward
+        # Expert A: Newton (Inertia)
         mu_newton = self.history[-1] + v_curr
-        sigma_newton = max(vel.std(), 0.1) # Tight wings
+        # Floor Newton sigma to at least the recent empirical vol
+        sigma_newton = max(vel.std(), 1.0) 
         
-        # Expert B: Boltzmann (Entropy/Chaos)
-        # Rule 60 Logic: Mean Reversion to local average
+        # Expert B: Boltzmann (Entropy)
         mu_boltz = np.mean(self.history[-10:])
-        sigma_boltz = max(vel.std() * 4, 5.0) # Wide wings (Safety)
+        # Boltzmann is extremely safe (3x Volatility)
+        sigma_boltz = max(vel.std() * 3, 5.0) 
         
         # Synthesis
         final_mu = w * mu_newton + (1 - w) * mu_boltz
         final_sigma = w * sigma_newton + (1 - w) * sigma_boltz
         
-        # QCEA Law 16: Survival Floor
-        final_sigma = max(final_sigma, 0.1)
+        # --- CRITICAL FIX: THE SURVIVAL FLOOR ---
+        # Never allow sigma to be tighter than 50% of realized volatility
+        # or absolute 1.0. This prevents the -infinity ruin.
+        empirical_floor = max(vel.std() * 0.5, 1.0)
+        final_sigma = max(final_sigma, empirical_floor)
         
         return {
             "type": "builtin", 
             "name": "norm", 
             "params": {"loc": float(final_mu), "scale": float(final_sigma)}
         }
-
+    
     def _default_pred(self):
         # Safe fallback
         loc = self.history[-1] if self.history else 0
