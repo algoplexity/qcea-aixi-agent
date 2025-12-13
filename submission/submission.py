@@ -3,6 +3,7 @@ QCEA-AIXI AGENT SUBMISSION
 Horizon 2: The Reflective Physicist
 Maintainer: Algoplexity
 Horizon 2 QCEA-AIXI Agent (Ensemble Gate + Prime 9 Sensor)
+Model: The Aletheia-Phronesis Architecture
 """
 import pandas as pd
 import numpy as np
