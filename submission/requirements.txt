@@ -2,3 +2,4 @@
 birdgame
 pandas
 numpy
+torch
