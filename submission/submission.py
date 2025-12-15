@@ -145,9 +145,15 @@ class QCEAAgent(TrackerBase):
         self.add_to_quarantine(p['time'], val)
         self.pop_from_quarantine(p['time'])
 
+    
+    def _default_pred(self):
+        loc = self.history[-1] if self.history else 0
+        return {"type": "builtin", "name": "norm", "params": {"loc": loc, "scale": 20}}
+
+
     def predict(self):
         """
-        The Policy Step: Combining Neural BDM with Adaptive Regulation.
+        The Policy Step: Aletheia (Un-concealment) + Phronesis (Prudence)
         """
         # Warmup
         if len(self.history) < self.window + 10: 
@@ -171,34 +177,34 @@ class QCEAAgent(TrackerBase):
                 t_grid = torch.FloatTensor(grid).unsqueeze(0).to(self.device)
                 with torch.no_grad():
                     logits = self.physicist(t_grid)
-                    probs = torch.softmax(logits, dim=1) # Shape [1, 9]
+                    probs = torch.softmax(logits, dim=1) 
                 
-                # A. Calculate Entropy (Confusion Signal)
+                # A. Entropy
                 p_np = probs.numpy()[0]
                 entropy = -np.sum(p_np * np.log(p_np + 1e-9))
                 
-                # B. Calculate Algorithmic Volatility (The Physics Constant)
-                # Weighted sum of probabilities * Lyapunov weights
-                # This replaces the magic numbers with physics.
+                # B. Physics Constants (Lyapunov Weights)
                 algo_multiplier = float(torch.sum(probs * CHAOS_WEIGHTS_TENSOR.to(self.device)).item())
                 
-                # Penalty for Confusion (High Entropy -> Widen further)
                 if entropy > 1.5:
                     algo_multiplier *= 1.2
                 
         except Exception: 
-            # If sensing fails, assume chaos
             algo_multiplier = 5.0
             vel = pd.Series(self.history).diff()
             
-        # --- PHASE 2: INFERENCE (Ensemble Weighting) ---
-        # Still use Entropy to blend Newton (Trend) vs Boltzmann (Mean Rev)
-        k = 5.0
-        threshold = 0.8
-        w = 1.0 - (1.0 / (1.0 + np.exp(-k * (entropy - threshold))))
+        # --- PHASE 2: INFERENCE ---
+        if self.model_loaded:
+            k = 5.0
+            threshold = 0.8
+            w = 1.0 - (1.0 / (1.0 + np.exp(-k * (entropy - threshold))))
+        else:
+            w = 0.5 
             
         # --- PHASE 3: ACT (The Algorithmic Governor) ---
         v_curr = vel.iloc[-1]
+        if pd.isna(v_curr): v_curr = 0.0
+        
         current_vol = vel.std()
         if pd.isna(current_vol) or current_vol == 0: current_vol = 1.0
         
@@ -210,18 +216,21 @@ class QCEAAgent(TrackerBase):
         final_mu = w * mu_newton + (1 - w) * mu_boltz
         
         # --- FINAL SIGMA CALCULATION ---
-        # Formula: Sigma = Volatility * Physics_Constant * Panic_Factor
-        # 1. Base Volatility (Empirical)
-        # 2. Algo Multiplier (Theoretical Risk from Rule Class)
-        # 3. Gamma (Adaptive Risk from Recent Performance)
         
-        raw_sigma = current_vol * algo_multiplier * self.gamma
+        # 1. Theoretical Risk (Vol * Physics * Gamma)
+        theoretical_sigma = current_vol * algo_multiplier * self.gamma
         
-        # Absolute Floor (0.5% of Price) - The ultimate backstop
+        # 2. Physical Floor (0.5% of Price)
         current_price = self.history[-1]
-        abs_floor = abs(current_price * 0.005)
+        price_floor = abs(current_price * 0.005)
         
-        final_sigma = max(raw_sigma, abs_floor, 2.0)
+        # 3. KINETIC FLOOR (The New Fix)
+        # If the price just moved X, Sigma must be at least X * 2.0.
+        # This prevents the "Lag Trap" where std() is low but velocity is high.
+        kinetic_floor = abs(v_curr) * 2.0
+        
+        # Select Maximum Safety
+        final_sigma = max(theoretical_sigma, price_floor, kinetic_floor, 2.0)
         
         # Store for feedback
         self.last_pred = (final_mu, final_sigma)
@@ -231,7 +240,3 @@ class QCEAAgent(TrackerBase):
             "name": "norm", 
             "params": {"loc": float(final_mu), "scale": float(final_sigma)}
         }
-    
-    def _default_pred(self):
-        loc = self.history[-1] if self.history else 0
-        return {"type": "builtin", "name": "norm", "params": {"loc": loc, "scale": 20}}
