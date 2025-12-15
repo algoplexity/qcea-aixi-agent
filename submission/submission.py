@@ -92,6 +92,7 @@ class ReflectiveGate(nn.Module):
 # 3. THE AGENT CLASS
 # ==============================================================================
 class QCEAAgent(TrackerBase):
+
     def __init__(self, h=1):
         super().__init__(h)
         self.history = []
@@ -100,23 +101,29 @@ class QCEAAgent(TrackerBase):
         self.telemetry = []
         self.step_counter = 0
 
-        # --- LOAD MODELS ---
-        # NOTE: No 'import' statements are needed here anymore.
-        # This assumes the 'resources' folder is in the same directory as this script.
-        # The platform should handle the pathing correctly.
-        base_path = pathlib.Path(__file__).parent.resolve()
+        # --- LOAD MODELS (Corrected Pathing Logic) ---
         
+        # This gets the directory of the current script: /workspace/submission/code/
+        code_root = pathlib.Path(__file__).parent.resolve()
+        
+        # By calling .parent again, we go one level up to the submission root.
+        # This should be: /workspace/submission/
+        submission_root = code_root.parent
+
         self.physicist = TinyRecursiveModel()
-        physicist_path = os.path.join(base_path, 'resources', 'trm_expert.pth')
+        # Now, build the path from the correct submission root.
+        # This will correctly resolve to: /workspace/submission/resources/trm_expert.pth
+        physicist_path = os.path.join(submission_root, 'resources', 'trm_expert.pth')
         self.physicist.load_state_dict(torch.load(physicist_path))
         self.physicist.eval()
 
         self.gate = ReflectiveGate()
-        gate_path = os.path.join(base_path, 'resources', 'reflective_gate.pth')
+        # Do the same for the gate model.
+        gate_path = os.path.join(submission_root, 'resources', 'reflective_gate.pth')
         self.gate.load_state_dict(torch.load(gate_path))
         self.gate.eval()
 
-        # --- HOMEOSTATIC STATE ---
+        # --- HOMEOSTATIC STATE (remains the same) ---
         self.gamma = 2.0
         self.last_pred = None
         self.target_ll = -1.0
