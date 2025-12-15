@@ -98,7 +98,7 @@ class QCEAAgent(TrackerBase):
             pathlib.Path('.')
         ]
         for p in possible_paths:
-            model_path = p / 'trm_expert.pth'
+            model_path = p /'reflective_gate.pth'
             if model_path.exists():
                 try:
                     self.physicist.load_state_dict(torch.load(model_path, map_location=self.device))
