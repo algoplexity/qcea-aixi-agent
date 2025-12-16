@@ -123,4 +123,60 @@ This paper provides the definitive justification for every phase of our plan. We
 
 ---
 
+There are **three critical flow-on effects** that require immediate attention to ensure that when the telemetry comes back, we are ready to publish and pivot.
+
+---
+
+### **1. The Manuscript: Aligning Methodology with Nested Learning**
+
+We updated the *Abstract* and *Introduction* to reflect the **Nested Learning (NL)** theory. However, the **Methodology** section of the paper still describes the system in purely engineering terms ("Fast/Slow").
+
+**Task:** We need to redraft the **Methodology Section** to explicitly map our engineering components to the mathematical formalism of Behrouz et al. (2025).
+
+*   **Reframing System 1:** It is not just a "Reflex"; it is a **Deep Optimizer Approximation**. We need to describe the `gamma` update rule not as a heuristic, but as a gradient descent step on the "Pain Surface."
+*   **Reframing System 2:** It is not just a "Sensor"; it is the **Slow Context Compressor**. We need to mathematically define the `Cognitive State Vector` as the compressed representation of the global context window ($W$).
+*   **Defining Entropic Valuation:** We need to write the formal equation that links $dH/d\tau$ (Epistemic Fragility) to the concept of **"Context Compression Failure"** from the NL paper.
+
+**Why this matters:** If the agent wins, reviewers will want to know *why*. If we have the mathematical proof ready, the result becomes scientific validation, not just a lucky gamble.
+
+---
+
+### **2. The Benchmark: Validating the "Data Foundry"**
+
+The README claims we have an immutable scientific benchmark: **`01_H2_The_Data_Foundry.ipynb`**.
+The README also claims we have a dataset on Hugging Face: **`qcea-adaptive-agent-benchmark`**.
+
+**Task:** We need to verify this pipeline.
+1.  Does the Data Foundry notebook actually generate the "Nightmare Mode" dataset (The "Dancing Landscape")?
+2.  Does it successfully push this to Hugging Face?
+3.  **Action:** We should run this notebook now. We need to generate the "Control Group" data (pure trends, pure chaos) and the "Test Group" data (structural breaks) so that when the Falcon results come in, we can cross-reference them against this theoretical baseline.
+
+**Why this matters:** The Falcon competition is "Real World" (messy). To publish, we need "Lab Conditions" (clean). The Data Foundry provides the lab conditions.
+
+---
+
+### **3. The H3 Scout: Broad Institute EDA**
+
+We agreed that the **Broad Institute competition** is the microcosm for **Horizon 3 (The Hive Mind)**. While we wait, we should perform a low-stakes **Exploratory Data Analysis (EDA)** on that dataset.
+
+**Task:** Create a draft notebook `horizon3_scout_broad_eda.ipynb`.
+*   **Goal:** Verify the **`r-GCA` Hypothesis**. Can we construct a graph from the gene expression data?
+*   **Method:**
+    1.  Load the train features.
+    2.  Compute a similarity matrix (Cosine Similarity) between `sig_id`s.
+    3.  Visualize the graph.
+    4.  **The Question:** Do "communities" emerge in this graph that correspond to Mechanism of Action (MoA) labels?
+
+**Why this matters:** If we see clusters forming naturally in the graph, we have **proof of concept** for Horizon 3 before we even write a line of model code. It validates that the "Hive Mind" approach is viable.
+
+---
+
+### **Summary of Immediate Actions**
+
+1.  **Drafting:** Rewrite the H2 Methodology section to use Nested Learning math.
+2.  **Coding:** Run `01_H2_The_Data_Foundry.ipynb` to ensure our "Lab" is open.
+3.  **Scouting:** Run a quick EDA on Broad Institute data to test the H3 Graph hypothesis.
+
+Which of these flow-on effects would you like to tackle first while we wait for the telemetry?
+---
 
